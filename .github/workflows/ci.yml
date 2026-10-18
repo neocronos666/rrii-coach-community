@@ -20,7 +20,7 @@ jobs:
         working-directory: backend
     steps:
       - name: Obtener repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Instalar uv y Python
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
@@ -65,7 +65,7 @@ jobs:
       ASSET_STORAGE_PATH: /tmp/rrii-coach-test-assets
     steps:
       - name: Obtener repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Instalar uv y Python
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
@@ -93,7 +93,7 @@ jobs:
         working-directory: frontend
     steps:
       - name: Obtener repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Instalar pnpm
         uses: pnpm/action-setup@v6
         with:
@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Obtener repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Preparar variables sin secretos reales
         run: cp .env.example .env
       - name: Validar configuración
@@ -135,7 +135,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Obtener repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Ejecutar suites y E2E aislados
         run: ./scripts/check-local.sh
       - name: Conservar informes y diagnóstico
