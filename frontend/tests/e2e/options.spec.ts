@@ -28,6 +28,9 @@ test("Opciones: catálogo global, vínculos, conflictos y actividad independient
   await page
     .getByRole("link", { name: "Crear característica", exact: true })
     .click();
+  await expect(
+    page.getByRole("heading", { name: "Crear característica", exact: true, level: 1 }),
+  ).toBeVisible();
   await page.getByLabel("Nombre", { exact: true }).fill(name);
   await page
     .getByLabel("Descripción", { exact: true })
@@ -41,6 +44,9 @@ test("Opciones: catálogo global, vínculos, conflictos y actividad independient
   await expect(page).toHaveURL(/\/options\/[0-9a-f-]{36}$/);
   const definition = page.url().split("/").pop()!;
   await page.getByRole("link", { name: "Crear valor", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Crear valor", exact: true, level: 1 }),
+  ).toBeVisible();
   await page.getByLabel("Nombre", { exact: true }).fill("Valor enlazado");
   await page
     .getByRole("combobox", { name: "Familia de diseño", exact: true })
