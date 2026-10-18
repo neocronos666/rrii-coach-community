@@ -1,0 +1,79 @@
+:root {
+  color-scheme: light;
+  --background: #f5f8fb;
+  --background-subtle: #eef3f8;
+  --surface: #fff;
+  --surface-raised: #f7fafd;
+  --surface-strong: #e7eef5;
+  --text-primary: #16212c;
+  --text-secondary: #425364;
+  --text-muted: #586c7e;
+  --text-disabled: #66788a;
+  --border: #d6e0ea;
+  --border-strong: #788d9f;
+  --primary: #147b4d;
+  --primary-soft: #ddf7ea;
+  --on-primary: #fff;
+  --secondary: #aa3e6c;
+  --secondary-soft: #f7dfea;
+  --success: #147b4d;
+  --warning: #806510;
+  --danger: #b33445;
+  --info: #286da1;
+  --focus-ring: #147b4d;
+  --selection: #ddf7ea;
+  --hover-overlay: #16212c0a;
+  --radius-panel: 16px;
+  --radius-control: 9px;
+  --shadow-panel: 0 12px 40px #16212c08;
+  --space-section: 32px;
+  --motion-fast: 160ms;
+  --target: 44px;
+  --content-gap: 16px;
+}
+.dark {
+  color-scheme: dark;
+  --background: #0f161e;
+  --background-subtle: #141e28;
+  --surface: #1c252f;
+  --surface-raised: #27313d;
+  --surface-strong: #393a46;
+  --text-primary: #e7edf4;
+  --text-secondary: #a7b4c1;
+  --text-muted: #91a0af;
+  --text-disabled: #7d8a97;
+  --border: #303d4b;
+  --border-strong: #647586;
+  --primary: #39d585;
+  --primary-soft: #173e31;
+  --on-primary: #0f161e;
+  --secondary: #de6675;
+  --secondary-soft: #392630;
+  --success: #39d585;
+  --warning: #dbca55;
+  --danger: #f18a96;
+  --info: #8ebfe9;
+  --focus-ring: #39d585;
+  --selection: #173e31;
+  --hover-overlay: #e7edf40a;
+  --shadow-panel: 0 12px 40px #00000012;
+}
+:root,
+.dark {
+  --ui-bg: var(--background);
+  --ui-bg-muted: var(--background-subtle);
+  --ui-bg-elevated: var(--surface);
+  --ui-bg-accented: var(--surface-raised);
+  --ui-bg-inverted: var(--text-primary);
+  --ui-text-inverted: var(--background);
+  --ui-text-toned: var(--text-secondary);
+  --ui-border-muted: var(--border);
+  --ui-text: var(--text-primary);
+  --ui-text-muted: var(--text-secondary);
+  --ui-text-dimmed: var(--text-muted);
+  --ui-text-highlighted: var(--text-primary);
+  --ui-border: var(--border);
+  --ui-border-accented: var(--border-strong);
+  --ui-primary: var(--primary);
+  --ui-radius: 0.5rem;
+}

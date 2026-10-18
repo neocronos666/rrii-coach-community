@@ -1,0 +1,77 @@
+# Suites automatizadas: bases efímeras, sin puertos del host ni volúmenes persistentes.
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: rrii_coach_test
+      POSTGRES_USER: rrii_coach_test
+      POSTGRES_PASSWORD: test_only
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rrii_coach_test -d rrii_coach_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  db_e2e:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: rrii_coach_e2e
+      POSTGRES_USER: rrii_coach_e2e
+      POSTGRES_PASSWORD: test_only
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rrii_coach_e2e -d rrii_coach_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    image: rrii-community-check-backend:${RRII_CHECK_RUN_ID:-local}
+    build:
+      context: ./backend
+      target: development
+    init: true
+    command: [sleep, infinity]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://rrii_coach_test:test_only@db:5432/rrii_coach_test
+      ASSET_STORAGE_PATH: /tmp/check-assets
+      BACKEND_CORS_ORIGINS: http://localhost:3000
+
+  api:
+    image: rrii-community-check-backend:${RRII_CHECK_RUN_ID:-local}
+    init: true
+    command: [uv, run, --frozen, uvicorn, app.main:app, --host, "0.0.0.0", --port, "8000"]
+    depends_on:
+      db_e2e:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://rrii_coach_e2e:test_only@db_e2e:5432/rrii_coach_e2e
+      ASSET_STORAGE_PATH: /tmp/check-assets
+      BACKEND_CORS_ORIGINS: http://127.0.0.1:3100
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  frontend:
+    image: rrii-community-check-frontend:${RRII_CHECK_RUN_ID:-local}
+    build:
+      context: ./frontend
+      target: testing
+    init: true
+    command: [sleep, infinity]
+    shm_size: 1gb
+    environment:
+      CI: "1"
+      NUXT_PUBLIC_API_BASE_URL: http://api:8000/api/v1
+      RRII_E2E_API_BASE: http://api:8000/api/v1
+      PLAYWRIGHT_PREVIEW: "1"
+      PLAYWRIGHT_JSON_OUTPUT_FILE: /tmp/check-reports/e2e.json

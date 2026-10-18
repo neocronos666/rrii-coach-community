@@ -1,0 +1,31 @@
+name: Mejora de estabilidad o uso
+description: Proponer una corrección o mejora menor dentro del alcance Community.
+title: "chore: "
+body:
+  - type: markdown
+    attributes:
+      value: El alcance funcional está congelado. Describí un error, un flujo incompleto o una mejora menor de uso o estabilidad.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema real
+      description: ¿Qué dificultad necesita resolver?
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Caso de uso
+      description: Describir actores, contexto y resultado buscado.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto esperado
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas evaluadas

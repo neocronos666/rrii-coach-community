@@ -1,0 +1,39 @@
+minimum_pre_commit_version: "4.0.0"
+default_install_hook_types:
+  - pre-commit
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^docs/domain/
+      - id: end-of-file-fixer
+        exclude: ^docs/domain/
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args:
+          - --maxkb=1024
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.12
+    hooks:
+      - id: ruff-check
+        args:
+          - --config=backend/pyproject.toml
+      - id: ruff-format
+        args:
+          - --check
+          - --config=backend/pyproject.toml
+
+  - repo: local
+    hooks:
+      - id: bash-syntax
+        name: validar sintaxis Bash
+        entry: bash -n
+        language: system
+        types:
+          - shell

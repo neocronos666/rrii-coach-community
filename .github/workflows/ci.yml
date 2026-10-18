@@ -1,0 +1,144 @@
+name: Calidad
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v6
+      - name: Instalar uv y Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: 0.11.29
+          python-version: "3.13"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Sincronizar dependencias
+        run: uv sync --frozen
+      - name: Ruff
+        run: uv run --frozen ruff check .
+      - name: Formato
+        run: uv run --frozen ruff format --check .
+      - name: Tipos
+        run: uv run --frozen mypy app tests
+      - name: Pruebas unitarias
+        run: uv run --frozen pytest -m "not integration"
+
+  backend-integration:
+    name: Persistencia PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-bookworm
+        env:
+          POSTGRES_DB: rrii_coach_test
+          POSTGRES_USER: rrii_coach_test
+          POSTGRES_PASSWORD: test_only
+        options: >-
+          --health-cmd "pg_isready -U rrii_coach_test -d rrii_coach_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+        ports:
+          - 5432:5432
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+psycopg://rrii_coach_test:test_only@localhost:5432/rrii_coach_test
+      ASSET_STORAGE_PATH: /tmp/rrii-coach-test-assets
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v6
+      - name: Instalar uv y Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: 0.11.29
+          python-version: "3.13"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Sincronizar dependencias
+        run: uv sync --frozen
+      - name: Verificar ciclo de migraciones
+        run: |
+          uv run --frozen alembic upgrade head
+          uv run --frozen alembic downgrade base
+          uv run --frozen alembic upgrade head
+          uv run --frozen alembic check
+      - name: Pruebas de integración
+        run: uv run --frozen pytest -m integration
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v6
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v6
+      - name: Instalar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+      - name: Pruebas
+        run: pnpm test
+      - name: Verificar tipos
+        run: pnpm typecheck
+      - name: Compilar
+        run: pnpm build
+
+  compose:
+    name: Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v6
+      - name: Preparar variables sin secretos reales
+        run: cp .env.example .env
+      - name: Validar configuración
+        run: docker compose config --quiet
+      - name: Validar entorno local de prueba humana
+        run: |
+          docker compose --env-file /dev/null -p rrii-community-test -f compose.test-env.yaml config --quiet
+          docker compose --env-file /dev/null -p rrii-community-check-config -f compose.check.yaml config --quiet
+          bash -n scripts/test-env-common.sh scripts/test-env-up.sh scripts/test-env-down.sh scripts/test-env-reset.sh scripts/check-local.sh
+
+  acceptance:
+    name: Cierre local reproducible
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v6
+      - name: Ejecutar suites y E2E aislados
+        run: ./scripts/check-local.sh
+      - name: Conservar informes y diagnóstico
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: community-checks
+          path: reports/checks/
+          retention-days: 7
+          if-no-files-found: error

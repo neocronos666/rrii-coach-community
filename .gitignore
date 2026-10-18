@@ -1,0 +1,46 @@
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/pre-commit/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node y Nuxt
+node_modules/
+.pnpm-store/
+.nuxt/
+.output/
+playwright-report/
+test-results/
+reports/checks/
+
+# Datos y archivos privados
+*.db
+*.sqlite
+*.sqlite3
+postgres-data/
+assets-data/
+data/
+*.stl
+*.gcode
+
+# Temporales y editores
+*.log
+*.tmp
+*.swp
+.DS_Store
+.idea/
+.vscode/

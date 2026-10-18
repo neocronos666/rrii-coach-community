@@ -1,0 +1,138 @@
+name: ${COMPOSE_PROJECT_NAME:-rrii-coach}
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Definir POSTGRES_DB en .env}
+      POSTGRES_USER: ${POSTGRES_USER:?Definir POSTGRES_USER en .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Definir POSTGRES_PASSWORD en .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+
+  db_test:
+    image: postgres:17-bookworm
+    profiles:
+      - test
+    restart: "no"
+    environment:
+      POSTGRES_DB: rrii_coach_test
+      POSTGRES_USER: rrii_coach_test
+      POSTGRES_PASSWORD: test_only
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U rrii_coach_test -d rrii_coach_test
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ./backend
+      target: development
+    restart: unless-stopped
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_ECHO: ${DATABASE_ECHO:-false}
+      ASSET_STORAGE_PATH: ${ASSET_STORAGE_PATH:-/data/assets}
+      ASSET_MAX_UPLOAD_BYTES: ${ASSET_MAX_UPLOAD_BYTES:-268435456}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:3000}
+    command:
+      - uv
+      - run
+      - uvicorn
+      - app.main:app
+      - --host
+      - ${BACKEND_HOST:-0.0.0.0}
+      - --port
+      - "8000"
+      - --reload
+    volumes:
+      - ./backend:/app
+      - backend_venv:/app/.venv
+      - assets_data:${ASSET_STORAGE_PATH:-/data/assets}
+    ports:
+      - 127.0.0.1:${BACKEND_PORT:-8000}:8000
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=2)"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    networks:
+      - internal
+
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    restart: unless-stopped
+    init: true
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-http://localhost:8000/api/v1}
+    command:
+      - pnpm
+      - dev
+      - --host
+      - ${FRONTEND_HOST:-0.0.0.0}
+      - --port
+      - "3000"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_nuxt:/app/.nuxt
+      - frontend_output:/app/.output
+    ports:
+      - 127.0.0.1:${FRONTEND_PORT:-3000}:3000
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  assets_data:
+  backend_venv:
+  frontend_node_modules:
+  frontend_nuxt:
+  frontend_output:

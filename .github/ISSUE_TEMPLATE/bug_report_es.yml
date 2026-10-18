@@ -1,0 +1,44 @@
+name: Reporte de error
+description: Informar un comportamiento incorrecto reproducible.
+title: "fix: "
+labels:
+  - bug
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      description: Commit, tag o versión utilizada.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      description: Sistema operativo, Docker, Compose y navegador si corresponde.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado actual
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Adjuntar solo logs pertinentes y eliminar secretos o datos privados.
+      render: shell

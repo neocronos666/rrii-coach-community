@@ -1,0 +1,9 @@
+title = "RRII-Coach Community"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Clave pública de preferencias visuales en localStorage; no es una credencial"
+regexTarget = "secret"
+regexes = ['''^rrii-coach\.appearance\.v1$''']

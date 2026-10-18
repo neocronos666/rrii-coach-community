@@ -1,0 +1,68 @@
+# Entorno local para prueba humana; independiente del Compose de desarrollo.
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: "no"
+    environment:
+      POSTGRES_DB: rrii_community_test
+      POSTGRES_USER: rrii_community_test
+      POSTGRES_PASSWORD: local_test_only
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rrii_community_test -d rrii_community_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    image: rrii-community-test-backend:local
+    build:
+      context: ./backend
+      target: development
+    restart: "no"
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://rrii_community_test:local_test_only@db:5432/rrii_community_test
+      ASSET_STORAGE_PATH: /data/assets
+      BACKEND_CORS_ORIGINS: http://localhost:${RRII_TEST_FRONTEND_PORT:-13000}
+    command: [uv, run, --frozen, uvicorn, app.main:app, --host, "0.0.0.0", --port, "8000"]
+    volumes:
+      - assets_data:/data/assets
+    ports:
+      - "127.0.0.1:${RRII_TEST_BACKEND_PORT:-18000}:8000"
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  frontend:
+    image: rrii-community-test-frontend:local
+    build:
+      context: ./frontend
+      target: development
+    restart: "no"
+    init: true
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: http://localhost:${RRII_TEST_BACKEND_PORT:-18000}/api/v1
+    command: [pnpm, dev, --host, "0.0.0.0", --port, "3000"]
+    ports:
+      - "127.0.0.1:${RRII_TEST_FRONTEND_PORT:-13000}:3000"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://localhost:3000').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  postgres_data:
+  assets_data:
