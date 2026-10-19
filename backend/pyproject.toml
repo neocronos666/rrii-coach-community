@@ -5,7 +5,7 @@ description = "Backend Community de RRII-Coach"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "alembic>=1.16,<2",
-    "fastapi>=0.139,<0.140",
+    "fastapi>=0.139,<0.144",
     "pillow>=12.3,<13",
     "psycopg[binary]>=3.2,<4",
     "pydantic-settings>=2.10,<3",
