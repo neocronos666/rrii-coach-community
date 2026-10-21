@@ -32,3 +32,17 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
 RUN pnpm exec playwright install --with-deps chromium \
     && chown -R app:app /opt/playwright
 USER app
+
+FROM base AS build
+ENV NUXT_PUBLIC_API_BASE_URL=/api/v1
+RUN pnpm build
+
+FROM node:24.18.0-bookworm-slim AS release
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 NUXT_PUBLIC_API_BASE_URL=/api/v1
+RUN groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid app --create-home app
+WORKDIR /app
+COPY --from=build --chown=app:app /app/.output ./.output
+USER app
+EXPOSE 3000
+CMD ["node", ".output/server/index.mjs"]

@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:17.10-bookworm
+    restart: "no"
+    environment:
+      POSTGRES_DB: rrii_coach
+      POSTGRES_USER: rrii_coach
+      POSTGRES_PASSWORD: ${RRII_DB_PASSWORD:?Falta configuración local}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rrii_coach -d rrii_coach"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  backend:
+    image: ${RRII_IMAGE_PREFIX:?Falta imagen}-backend:${RRII_VERSION:?Falta versión}
+    restart: "no"
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://rrii_coach:${RRII_DB_PASSWORD}@db:5432/rrii_coach
+      ASSET_STORAGE_PATH: /data/assets
+      BACKEND_CORS_ORIGINS: http://localhost:${RRII_PORT}
+    volumes:
+      - assets_data:/data/assets
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 10s
+  frontend:
+    image: ${RRII_IMAGE_PREFIX:?Falta imagen}-frontend:${RRII_VERSION:?Falta versión}
+    restart: "no"
+    init: true
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: /api/v1
+    ports:
+      - "127.0.0.1:${RRII_PORT}:3000"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://localhost:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 10s
+volumes:
+  postgres_data:
+  assets_data:

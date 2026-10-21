@@ -1,6 +1,9 @@
 export default defineNuxtConfig({
   compatibilityDate: "2026-07-28",
   ssr: false,
+  routeRules: {
+    "/api/**": { proxy: "http://backend:8000/api/**" },
+  },
   devtools: { enabled: false },
   colorMode: {
     preference: "dark",

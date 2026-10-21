@@ -44,3 +44,11 @@ data/
 .DS_Store
 .idea/
 .vscode/
+
+# Artefactos de distribución y estado local del paquete
+dist/
+distribution/.operation.lock
+distribution/.installed-version
+distribution/.previous-version
+distribution/.attempted-version
+distribution/backups/
