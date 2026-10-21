@@ -1,10 +1,15 @@
 # Contribuir a RRII-Coach Community
 
+Si querés ayudar como usuario o tester, empezá por [cómo probar y reportar](docs/installation/testing_es.md).
+Para modificar el código, seguí los pasos de esta página.
+
+[Inicio](README.md) · [Documentación](docs/README.md)
+
 ## Requisitos y preparación
 
 El entorno oficial requiere Docker Engine, Docker Compose y GNU Make. Seguir
-el inicio rápido del `README.md` y la guía
-`docs/development/local_environment_es.md`.
+el [inicio rápido](README.md#probar-ahora-desde-el-repositorio) y la
+[guía de desarrollo](docs/development/local_environment_es.md).
 
 ## Ramas
 
@@ -36,7 +41,7 @@ Cuando cambie el contrato FastAPI, ejecutar `make openapi` e incluir juntos
 duplicados manualmente.
 
 Los commits siguen la convención documentada en
-`docs/development/commits_es.md`.
+[la guía de commits](docs/development/commits_es.md).
 
 ## Pull requests
 
@@ -62,6 +67,6 @@ en entornos compartidos ni ejecutar operaciones destructivas sin autorización.
 
 ## Condiciones de evaluación
 
-Todos los derechos reservados, según [LICENSE](LICENSE). Esta publicación permite
-evaluación local. Para esta etapa, priorizar reportes reproducibles de errores;
-los aportes de código requieren acordar previamente sus condiciones de uso.
+Todos los derechos reservados, según [LICENSE](LICENSE). La publicación vigente
+permite evaluación local; los aportes de código requieren acordar previamente sus
+condiciones de uso. Nuevos artefactos y cambios públicos requieren autorización.

@@ -1,4 +1,9 @@
-# Entorno local de prueba humana
+# Prueba local desde el repositorio
+
+[Inicio](../../README.md) · [Elegir instalación](../installation/README.md) · [Ayuda](../troubleshooting/README.md)
+
+Esta guía usa un clon del repositorio y prepara imágenes desde el código. Si
+recibiste un paquete con install.sh, seguí la [guía del paquete](../installation/linux_es.md).
 
 Este entorno permite recorrer la aplicación en la PC y detener sus procesos al
 terminar. Es independiente de las suites automatizadas y del Compose de

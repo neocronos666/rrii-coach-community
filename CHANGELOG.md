@@ -1,5 +1,12 @@
 # Registro de cambios
 
+## En preparación
+
+- Distribución Linux con imágenes runtime, paquete y scripts de ciclo de vida.
+- Pruebas del artefacto fuera del checkout y workflow manual sin publicación.
+- Documentación organizada para usuarios, testers y desarrolladores.
+- Todavía no hay imágenes ni Release candidata publicadas.
+
 ## Versión de evaluación — 18/10/2026
 
 - Primera copia pública de RRII-Coach Community para evaluación local.

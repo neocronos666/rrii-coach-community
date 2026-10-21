@@ -1,4 +1,10 @@
-# Recorrido manual del frontend Community terminado
+# Recorrido de pantallas de Community
+
+[Guías de uso](../user-guide/README.md) · [Guía para testers](../installation/testing_es.md)
+
+Las pantallas son las mismas en el paquete Linux. En ese caso, usá su URL
+(normalmente http://localhost:18080) y sus scripts; los comandos siguientes
+corresponden al entorno del repositorio.
 
 Iniciar el [entorno local de prueba humana](human_test_environment_es.md) y abrir
 `http://localhost:13000`. Las rutas siguientes son relativas a esa aplicación;

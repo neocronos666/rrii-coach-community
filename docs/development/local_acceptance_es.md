@@ -1,5 +1,11 @@
 # Aceptación humana local
 
+[Guía para testers](../installation/testing_es.md) · [Recorrido de pantallas](frontend_prueba_manual_es.md)
+
+La preparación y los comandos de esta guía corresponden al entorno del repositorio.
+Para usar un paquete, seguí su [instalación](../installation/linux_es.md) y aplicá
+las mismas comprobaciones de pantallas y persistencia con sus propios scripts.
+
 Este recorrido requiere intervención humana. Los resultados de pytest, Vitest y
 Playwright no lo completan automáticamente. Usar datos sintéticos; los datos ya
 existentes en el entorno se conservan. No ejecutar reset para comenzar la prueba.
