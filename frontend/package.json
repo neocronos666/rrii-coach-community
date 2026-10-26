@@ -29,10 +29,10 @@
     "zod": ">=4.0.0 <5"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@iconify-json/lucide": "^1.2.120",
+    "@axe-core/playwright": "^4.14.0",
+    "@iconify-json/lucide": "^1.2.147",
     "@playwright/test": ">=1.55.0 <2",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.6.5",
     "openapi-typescript": ">=7.9.0 <8",
     "typescript": ">=5.9.0 <6",
     "vitest": ">=3.2.0 <5",
